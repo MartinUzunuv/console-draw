@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+     <input type="file" id="imageInput" accept="image/*">
+    <script>
+        document.getElementById('imageInput').addEventListener('change', handleImage);
+
+        function handleImage(event) {
+            const input = event.target;
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    const image = new Image();
+                    image.src = e.target.result;
+
+                    image.onload = function () {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        
+                        // Set the canvas dimensions to the desired size (48x40)
+                        canvas.width = 48;
+                        canvas.height = 40;
+
+                        // Draw the image on the canvas
+                        ctx.drawImage(image, 0, 0, 48, 40);
+
+                        // Get the image data
+                        const imageData = ctx.getImageData(0, 0, 48, 40).data;
+
+                        // Convert the image data to a 2D array of colors (48x40)
+                        const colorArray = [];
+                        for (let y = 0; y < 40; y++) {
+                            const row = [];
+                            for (let x = 0; x < 48; x++) {
+                                const i = (y * 48 + x) * 4;
+                                const red = imageData[i];
+                                const green = imageData[i + 1];
+                                const blue = imageData[i + 2];
+
+                                // You can use these values as needed
+                                const color = {r:red, g:green, b:blue};
+                                row.push(color);
+                            }
+                            colorArray.push(row);
+                        }
+
+                        // Log the resulting 2D array
+                        // console.log(colorArray);
+                        consoleImage(colorArray)
+                    };
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+    <script src="./cnsl.js"></script>
+</body>
+</html>
